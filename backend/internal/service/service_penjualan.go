@@ -235,18 +235,26 @@ func (s *servicePenjualan) generateInvoiceText(penjualan model.Penjualan) string
 	// perhitungan diskon 1,2, dan 3
 	var grandTotal float64
 	grandTotal = float64(total)
-	diskon1 := penjualan.Toko.Disc1 / 100 * grandTotal
-	grandTotal = grandTotal - diskon1
-	diskon2 := penjualan.Toko.Disc2 / 100 * grandTotal
-	grandTotal = grandTotal - diskon2
-	diskon3 := penjualan.Toko.Disc3 / 100 * grandTotal
+	fmt.Println("Total bruto:", grandTotal)
+	diskon1 := penjualan.Toko.Disc1 * grandTotal
+	fmt.Println("Diskon 1:", diskon1)
+	grandTotal -= diskon1
+	fmt.Println("Grand total after diskon 1:", grandTotal)
+	diskon2 := penjualan.Toko.Disc2 * grandTotal
+	fmt.Println("Diskon 2:", diskon2)
+	grandTotal -= diskon2
+	fmt.Println("Grand total after diskon 2:", grandTotal)
+	diskon3 := penjualan.Toko.Disc3 * grandTotal
+	fmt.Println("Diskon 3:", diskon3)
+	grandTotal -= diskon3
+	fmt.Println("Grand total after diskon 3:", grandTotal)
 	//grandTotal = grandTotal - diskon3
 	sb.WriteString(strings.Repeat("-", 80) + "\n")
 	sb.WriteString(fmt.Sprintf("| %64s | %9d |\n", "Total", total))
 
-	sb.WriteString(fmt.Sprintf("| %64s | %9f |\n", "Disc 1", diskon1))
-	sb.WriteString(fmt.Sprintf("| %64s | %9f |\n", "Disc 2", diskon2))
-	sb.WriteString(fmt.Sprintf("| %64s | %9f |\n", "Disc 3", diskon3))
+	sb.WriteString(fmt.Sprintf("| %64s | %9.0f |\n", "Disc 1", diskon1)) // %9.0F ARTINYA pembualan ke bilangan bulat tanpa desimal
+	sb.WriteString(fmt.Sprintf("| %64s | %9.0f |\n", "Disc 2", diskon2))
+	sb.WriteString(fmt.Sprintf("| %64s | %9.0f |\n", "Disc 3", diskon3))
 
 	sb.WriteString(fmt.Sprintf("| %64s | %9d |\n", "Grand Total", penjualan.TotalNetto))
 	sb.WriteString(strings.Repeat("=", 80) + "\n")

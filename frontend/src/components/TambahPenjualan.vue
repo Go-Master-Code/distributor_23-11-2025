@@ -184,8 +184,7 @@
                     <div>Diskon 1: <strong>{{ totalDiskon1Formatted }}</strong></div>
                     <div>Diskon 2: <strong>{{ totalDiskon2Formatted }}</strong></div>
                     <div>Diskon 3: <strong>{{ totalDiskon3Formatted }}</strong></div>
-                    <div>Total Diskon: <strong>{{ totalDiskonFormatted }}</strong></div>
-                    <div>Netto: <strong>{{ totalNetoPenjualanFormatted }}</strong></div>
+                    <div>Grand Total: <strong>{{ totalNetoPenjualanFormatted }}</strong></div>
                 </div>
         </div>
 
@@ -291,7 +290,7 @@
         const persen1 = Number(form.disc_1) || 0
         var diskon1 = persen1/100 * bruto
 
-        return diskon1
+        return Math.round(diskon1)
     })
 
     // dibuat agar field totalDiskon1Formatted (di elemen html) tidak warning
@@ -305,7 +304,7 @@
         const persen2 = Number(form.disc_2) || 0
         var diskon2 = persen2/100 * bruto
 
-        return diskon2
+        return Math.round(diskon2)
     })
 
     // dibuat agar field totalDiskon2Formatted (di elemen html) tidak warning
@@ -319,7 +318,7 @@
         const persen3 = Number(form.disc_3) || 0
         var diskon3 = persen3/100 * bruto
 
-        return diskon3
+        return Math.round(diskon3)
     })
 
     // dibuat agar field totalDiskon2Formatted (di elemen html) tidak warning
@@ -327,10 +326,11 @@
         return formatRupiah(totalDiskon3.value)
     })
 
-    const totalDiskonFormatted = computed(() => {
-        const totalDiskon = totalDiskon1.value + totalDiskon2.value + totalDiskon3.value // harus pakai .value karena totalDiskon1, 2, dan 3 adalah computed
-        return formatRupiah(totalDiskon)
-    })
+    // ======TOTAL DISKON TIDAK DITAMPILKAN======
+    // const totalDiskonFormatted = computed(() => {
+    //     const totalDiskon = totalDiskon1.value + totalDiskon2.value + totalDiskon3.value // harus pakai .value karena totalDiskon1, 2, dan 3 adalah computed
+    //     return formatRupiah(totalDiskon)
+    // })
 
     // computed neto numerik bulat
     const totalNetoPenjualan = computed(() => {
