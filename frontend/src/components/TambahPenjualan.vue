@@ -73,12 +73,13 @@
             <table class="table table-bordered align-middle">
                 <thead class="table-light">
                     <tr>
-                    <th style="width: 45%">Barang</th>
-                    <th style="width: 10%">Size</th>
-                    <th style="width: 10%">Qty</th>
-                    <th style="width: 10%">Harga Satuan</th>
-                    <th style="width: 15%">Total</th>
-                    <th style="width: 10%">Aksi</th>
+                    <th style="width: 50%">Barang</th>
+                    <th style="width: 7%">Size</th>
+                    <th style="width: 7%">Stok</th>
+                    <th style="width: 7%">Qty</th>
+                    <th style="width: 10%">Harga</th>
+                    <th style="width: 12%">Total</th>
+                    <th style="width: 7%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,6 +121,14 @@
                             </option>
                         </select>
                         
+                    </td>
+                    <td>
+                        <input
+                            type="number"
+                            class="form-control text-end"
+                            v-model.number="item.stok"
+                            disabled
+                        />
                     </td>
                     <td>
                         <input
@@ -220,6 +229,7 @@
                 size: 0,
                 harga: 0,
                 qty: 1,
+                stok: 0,
                 total: 0
             }
         ]

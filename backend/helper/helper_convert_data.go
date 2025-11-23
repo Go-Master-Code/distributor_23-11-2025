@@ -337,6 +337,7 @@ func ConvertToDTOPenjualanDetailSingle(dj model.PenjualanDetail) dto.PenjualanDe
 	djDTO.BarangArtikel = dj.Barang.Artikel.Nama
 	djDTO.BarangWarna = dj.Barang.Warna.Nama
 	djDTO.BarangUkuran = dj.Barang.Ukuran.Nama
+	djDTO.BarangKategori = dj.Barang.KategoriBarang.Huruf
 	djDTO.Size = dj.Size
 	djDTO.Qty = dj.Qty
 	djDTO.Harga = dj.Harga
@@ -350,15 +351,16 @@ func ConvertToDTOPenjualanDetailPlural(dj []model.PenjualanDetail) []dto.Penjual
 		djDTO = append(djDTO, dto.PenjualanDetailResponse{
 			// ID:          data.ID,
 			// PenjualanID: data.PenjualanID,
-			BarangID:      data.BarangID,
-			BarangKode:    data.Barang.Kode,
-			BarangArtikel: data.Barang.Artikel.Nama,
-			BarangWarna:   data.Barang.Warna.Nama,
-			BarangUkuran:  data.Barang.Ukuran.Nama,
-			Size:          data.Size,
-			Qty:           data.Qty,
-			Harga:         data.Harga,
-			Subtotal:      data.Subtotal,
+			BarangID:       data.BarangID,
+			BarangKode:     data.Barang.Kode,
+			BarangArtikel:  data.Barang.Artikel.Nama,
+			BarangWarna:    data.Barang.Warna.Nama,
+			BarangUkuran:   data.Barang.Ukuran.Nama,
+			BarangKategori: data.Barang.KategoriBarang.Huruf,
+			Size:           data.Size,
+			Qty:            data.Qty,
+			Harga:          data.Harga,
+			Subtotal:       data.Subtotal,
 		})
 	}
 	return djDTO

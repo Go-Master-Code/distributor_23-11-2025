@@ -7,7 +7,7 @@ import (
 	"api-distributor/internal/repository"
 	"errors"
 	"fmt"
-	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -188,13 +188,100 @@ func (s *servicePenjualan) CreatePenjualan(req dto.CreatePenjualanRequest) (dto.
 	// ==============================
 	// Tambahkan bagian cetak faktur
 	// ==============================
-	invoiceText := s.generateInvoiceText(newPenjualan)
+	// invoiceText := s.generateInvoiceText(newPenjualan)
 
-	// Simpan ke file (opsional)
-	fileName := fmt.Sprintf("faktur_%s.txt", penjualan.NoFaktur)
-	if err := os.WriteFile(fileName, []byte(invoiceText), 0644); err != nil {
-		fmt.Println("Gagal menulis faktur:", err)
+	// // Simpan ke file (opsional)
+	// fileName := fmt.Sprintf("faktur_%s.txt", penjualan.NoFaktur)
+	// if err := os.WriteFile(fileName, []byte(invoiceText), 0644); err != nil {
+	// 	fmt.Println("Gagal menulis faktur:", err)
+	// }
+
+	// percobaan pivot table
+	fmt.Println("Test Pivot Faktur")
+	// ambil data detil penjualan berdasarkan nomor faktur
+	newDetilJual, err := s.repoDetilJual.GetPenjualanDetailById(penjualan.ID)
+
+	if err != nil {
+		panic(err)
 	}
+
+	// convert ke dto detil jual respons
+	detilJualDTO := helper.ConvertToDTOPenjualanDetailPlural(newDetilJual)
+
+	// debug (optional)
+	for _, detil := range detilJualDTO {
+		fmt.Println(detil)
+	}
+
+	// 1. Ambil semua size unik
+	sizeSet := map[int]bool{}
+	for _, d := range detilJualDTO {
+		sizeSet[d.Size] = true
+	}
+
+	sizes := make([]int, 0, len(sizeSet))
+	for s := range sizeSet {
+		sizes = append(sizes, s)
+	}
+	sort.Ints(sizes)
+
+	// 2. Buat pivot: "Kode + warna" -> size -> qty dan map harga
+	hargaMap := map[string]int{}
+	pivot := map[string]map[int]int{}
+
+	for _, d := range detilJualDTO {
+		// key pivot: kode + warna
+		key := fmt.Sprintf("%-7s %-13s %-10s", d.BarangKode, d.BarangArtikel, d.BarangWarna)
+
+		if _, ok := pivot[key]; !ok {
+			pivot[key] = map[int]int{}
+		}
+		// key = barang kode + warna
+		pivot[key][d.Size] += d.Qty
+		// simpan harga (ambil dari dto)
+		hargaMap[key] = d.Harga
+	}
+
+	fmt.Println("===============================================================================")
+	// 3. Print pivot table
+	fmt.Printf("%-7s %-13s %-10s", "Kode", "Artikel", "Warna")
+	for _, s := range sizes {
+		fmt.Printf("%5d", s)
+	}
+
+	// header kolom total
+	fmt.Printf("%5s", "Qty")
+
+	// header kolom harga
+	fmt.Printf("%8s", "Harga")
+
+	// header kolom total
+	fmt.Printf("%9s", "Total")
+
+	fmt.Println("\n===============================================================================")
+
+	for key, row := range pivot {
+		fmt.Printf("%-20s", key)
+		// initial value total per row
+		total := 0
+
+		for _, s := range sizes {
+			val := row[s]
+			if val == 0 {
+				fmt.Printf("%5s", " ") // kosong jika 0
+			} else {
+				fmt.Printf("%5d", val) // qty sebenarnya
+				total += val
+			}
+		}
+		// tampilkan total di kolom terakhir
+		fmt.Printf("%5d", total)
+		fmt.Printf("%8d", hargaMap[key])       // harga dari dto
+		fmt.Printf("%9d", total*hargaMap[key]) // hitung total harga * qty
+
+		fmt.Println()
+	}
+	fmt.Println("===============================================================================")
 
 	return response, nil
 }
